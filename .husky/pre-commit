@@ -27,3 +27,4 @@ PATH="/usr/local/bin:$PATH"
 
 # Format and submit code according to lintstagedrc configuration
 npm run lint:lint-staged
+npm test
