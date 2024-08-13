@@ -29,13 +29,14 @@ jobs:
     needs: build
 
     steps:
-    - name: Decode SSH private key
+    - name: Deploy to Azure VM
       env:
         SSH_KEY: ${{ secrets.SSH_KEY }}
         VM_USER: ${{ secrets.VM_USER }}
         VM_IP: ${{ secrets.VM_IP }}
       run: |
         eval $(ssh-agent -s)
+        ssh-add -l
         echo "$SSH_KEY" | base64 --decode | ssh-add -
-        scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist/* $VM_USER@$VM_IP:~/skywalking/skywalking-ui
-        ssh -i ~/.ssh/id_rsa $VM_USER@$VM_IP "sudo systemctl restart skywalking-ui"
+        scp -v -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -r ./dist/* $VM_USER@$VM_IP:~/skywalking/skywalking-ui
+        ssh -v -i ~/.ssh/id_rsa $VM_USER@$VM_IP "sudo systemctl restart skywalking-ui"
