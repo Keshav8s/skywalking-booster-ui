@@ -30,18 +30,12 @@ jobs:
 
     steps:
     - name: Decode SSH private key
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        VM_USER: ${{ secrets.VM_USER }}
+        VM_IP: ${{ secrets.VM_IP }}
       run: |
         eval $(ssh-agent -s)
         echo "$SSH_KEY" | base64 --decode | ssh-add -
-      env:
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-
-    - name: Deploy to VM
-      env:
-        VM_USER: ${{ secrets.VM_USER }}
-        VM_IP: ${{ secrets.VM_IP }}
-        KEY: ${{ secrets.SSH_KEY }}
-
-      run: |
         scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa -r ./dist/* $VM_USER@$VM_IP:~/skywalking/skywalking-ui
         ssh -i ~/.ssh/id_rsa $VM_USER@$VM_IP "sudo systemctl restart skywalking-ui"
