@@ -38,5 +38,10 @@ jobs:
         eval $(ssh-agent -s)
         ssh-add -l
         echo "$SSH_KEY" | base64 --decode | ssh-add -
-        scp -v -o StrictHostKeyChecking=no -r ./dist/* $VM_USER@$VM_IP:~/skywalking/skywalking-ui
-        ssh -v $VM_USER@$VM_IP "sudo systemctl restart skywalking-ui"
+        # scp -v -o StrictHostKeyChecking=no -r ./dist/* $VM_USER@$VM_IP:~/skywalking/skywalking-ui
+        # ssh -v $VM_USER@$VM_IP "sudo systemctl restart skywalking-ui"
+        ssh -vvv -o StrictHostKeyChecking=no -t $VM_USER@$VM_IP << 'EOF'
+          cd ~/skywalking/docker
+          docker-compose --profile elasticsearch down
+          docker-compose --profile elasticsearch up -d
+        EOF
